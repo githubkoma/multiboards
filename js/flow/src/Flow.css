@@ -1,0 +1,173 @@
+.floatingedges {
+    color: white !important;
+    flex-direction: column;
+    display: flex;
+    flex-grow: 1;
+    height: 100%;
+  }
+  
+  .floatingedges .react-flow__handle {
+    opacity: 0;
+  }
+
+/*
+https://forum.selfhtml.org/self/2009/mar/18/wie-gross-ist-h1-pixel-oder-point/1347800#m1347800
+https://www.w3schools.com/cssref/css_default_values.php
+*/
+
+h1,h2,h3,h4,h5,h6 {
+    color: white !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    font-weight: bold !important;
+}
+
+h1 {    
+    display: block !important;
+    font-size: 2em !important;
+    margin-top: .85em !important;
+    margin-bottom: .85em !important;
+
+}
+
+h2 {
+    font-size: 1.5em !important;
+    margin-top: .72em !important;
+    margin-bottom: .72em !important;
+}
+
+h3 {    
+    font-size: 1.17em !important;
+    margin-top: .61em !important;
+    margin-bottom: .61em !important;
+}
+
+h4 {    
+    font-size: 1em !important;  
+    margin-top: .5em !important;
+    margin-bottom: .5em !important;
+}
+
+p {    
+    font-size: 1em !important;    
+    font-weight: normal !important;   
+}
+
+h5 {    
+    font-size: .83em !important;
+    margin-top: .42em !important;
+    margin-bottom: .42em !important;
+}
+
+h6 {    
+    font-size: .67em !important;
+    margin-top: .33em !important;
+    margin-bottom: .33em !important;
+}
+
+.react-flow__node-text > div > div > div > p {    
+    margin-top: -10px !important;
+}
+
+.react-flow__node-text > div > div > div > h1,
+.react-flow__node-text > div > div > div > h2,
+.react-flow__node-text > div > div > div > h3,
+.react-flow__node-text > div > div > div > h4,
+.react-flow__node-text > div > div > div > h5,
+.react-flow__node-text > div > div > div > h6 {    
+    margin-top: -5px !important;
+}
+
+.react-flow__node-text > div > div > div > p ~ p, /* Undo the above styles for every subsequent article > p */    
+.react-flow__node-text > div > div > div > h1 ~ h1,
+.react-flow__node-text > div > div > div > h2 ~ h2,
+.react-flow__node-text > div > div > div > h3 ~ h3,
+.react-flow__node-text > div > div > div > h4 ~ h4,
+.react-flow__node-text > div > div > div > h5 ~ h5,
+.react-flow__node-text > div > div > div > h6 ~ h6 {     
+    margin-top: 0px !important;
+}
+
+
+.markDownComponent a:link {
+    color: blue !important;
+    text-decoration: underline !important;
+    cursor: pointer !important;
+    font-size: 1em !important;    
+    font-weight: normal !important;   
+}
+.markDownComponent a:link:before {
+    content: '🔗';
+}
+
+.markDownComponent input[type='checkbox'] {
+    vertical-align: middle;
+}
+
+.markDownComponent > div > ul,
+.markDownComponent > div > ol { /* direct > descendant */
+    padding-left: 2px !important;     
+}
+
+.markDownComponent table {
+    width: 100% !important;
+    display: table !important;   
+    border-collapse: collapse !important;
+}
+.markDownComponent th {    
+    font-weight: bold;
+}
+.markDownComponent ul { 
+	list-style-type: disc !important;
+	list-style-position: inside !important;    
+    display: block !important;    
+    margin-top: 0.05em !important;  
+    margin-bottom: 0.05em !important;  
+    margin-left: 0 !important;  
+    margin-right: 0 !important;  
+    padding-left: 10px !important;  
+}
+.markDownComponent li {	
+    font-size: 0.9em !important;
+    font-weight: normal !important;    
+}
+.markDownComponent ol { 
+	list-style-position: inside !important;    
+    display: block !important;    
+    margin-top: 0.05em !important;  
+    margin-bottom: 0.05em !important;  
+    margin-left: 0 !important;  
+    margin-right: 0 !important;  
+    padding-left: 10px !important;  
+}
+.markDownComponent table, 
+.markDownComponent td, 
+.markDownComponent th {    
+    border: .5px solid;
+    border-color: gray;
+    text-align: left;
+}
+
+/* not working yet https://stackoverflow.com/questions/35571603/removing-outer-border-in-html-table
+.markDownComponent tr:first-child td {
+    border-top: none !important;
+}
+.markDownComponent tr:last-child td {
+    border-bottom: none !important;
+}
+.markDownComponent tr td:first-child {
+    border-left: none !important;
+}
+.markDownComponent tr td:last-child {
+    border-right: none !important;
+}
+*/
+
+/* not working
+textarea ::-webkit-scrollbar {
+  display: block;
+  width: 10em;
+  overflow: auto;
+  height: 2em;  
+}
+*/

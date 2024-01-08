@@ -1,0 +1,15 @@
+{
+    "name": "Basic Skeleton",
+    "description": "Basic App Skeleton",
+    "type": "project",
+    "license": "AGPL",
+    "authors": [
+        {
+            "name": "AuthorX"
+        }
+    ],
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    }
+}
