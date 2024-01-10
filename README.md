@@ -1,32 +1,46 @@
 # MultiBoards (Nextcloud App)
+- Create Digital Boards from your content in Nextcloud
+- Use it for Mindmaps, Visualizations, Knowledge Management, ...
 - Based on [Reactflow](https://reactflow.dev/)
-- Place this app in **nextcloud/apps/**
+
+![](https://raw.githubusercontent.com/githubkoma/multiboards/main/img/screenshot.jpg)
+
+## Install the app
+- Either via https://apps.nextcloud.com
+- or Place this app in **nextcloud/apps/**
 
 ## Use the app
-- Create new MultiBoard in the Files Overview
-- Place on Canvas: Text Nodes, .md Documents, Images, PDF, ...
+- Create new MultiBoard within the Files Overview
+- Write, Edit and Connect on Board: Text Nodes, `.md` Documents, Images, PDFs
+- Share Boards to the Public (only for single `.mboard` File, not a Shared Folder)
 
 ## Building the app
-React:
-`js/flow/$ npm install`
-`js/flow/$ npm run build`
-
-Filesintegration:
-`js/filesintegration/$ npm install`
-`js/filesintegration/$ npm run build`
 
 ### Javascript
+React:
+```
+js/flow/$ npm install
+js/flow/$ npm run build
+```
+
+Filesintegration:
+```
+js/filesintegration/$ npm install
+js/filesintegration/$ npm run build
+```
 
 #### React
 - Sources located in `js/flow/`
 - Build: js automatically located in `js/flow/build/static/js/`
   - MANUALLY adapt references in `templates/index.php`
 
-#### CSS
+##### CSS
 - Build: MANUALLY place in `css/`
   - MANUALLY adapt reference in `templates/index.php`
 
-#### filesintegration
+#### FilesApp Integration
+- Sources located in `js/filesintegration/`
+
 created like so:
 ```
 js$ mkdir filesintegration
@@ -47,3 +61,7 @@ filesintegration$ vi webpack.config.js
 ### HTML
 - templates (php format) located in `templates/`
 - root `index.php` includes script + css references
+
+## Publish the App
+- [Publish the App on the Appstore](https://nextcloudappstore.readthedocs.io/en/latest/developer.html#publishing-apps-on-the-app-store)
+- [App Upgrade Guide](https://docs.nextcloud.com/server/latest/developer_manual/app_publishing_maintenance/app_upgrade_guide/index.html)

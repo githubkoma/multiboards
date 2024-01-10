@@ -5,7 +5,7 @@ import { WebsocketProvider } from "y-websocket";
 // (optional, define types for TypeScript)
 //type Todo = { completed: boolean, title: string };
 
-var syncProviderUrl = document.getElementById("syncProviderUrl").value; // see index.php
+var syncProviderUrl = document.getElementById("syncProviderUrl").value; // experimental: sudo -u www-data php /var/www/html/occ config:app:set "multiboards" "syncProviderUrl" --value "ws://localhost:4444/"
 
 // Create your SyncedStore store
 export const store = syncedStore({ nodes: {}, edges: {} });

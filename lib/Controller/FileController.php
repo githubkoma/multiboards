@@ -71,7 +71,7 @@ class FileController extends Controller {
 	 * CAUTION: the @Stuff turns off security checks; see above
 	 *
 	 * @NoAdminRequired
-	 * @NoCSRFRequired
+	 * @ NoCSRFRequired
 	 * @PublicPage
 	 */	 	
     public function saveFile(int $fileId, string $shareToken, string $fileContent) {

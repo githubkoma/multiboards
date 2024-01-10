@@ -33,17 +33,12 @@ class Application extends App implements IBootstrap {
                 //Util::addHeader('meta', ['property' => "Stuff", 'content' => 'ValueXYZ']);
 
                 //$policy->addAllowedStyleDomain('fonts.googleapis.com');                                              
-                $policy->addAllowedFrameDomain('*');
+                //$policy->addAllowedFrameDomain('*');
                 $policy->addAllowedImageDomain('*');
                 
-                // Allow Connection to Synprovider
-                if ($appConfig->getValue(self::APP_ID, "syncProviderUrl") == "") 
-                  { 
-                    $syncProviderUrl = "ws://localhost:4444"; // fallback for store.ts      
-                    $appConfig->setValue(self::APP_ID, "syncProviderUrl", $syncProviderUrl);
-                  } else { 
-                    $syncProviderUrl = $appConfig->getValue(self::APP_ID, "syncProviderUrl");
-                  }
+                // Allow Connection to SyncProvider                 
+                $syncProviderUrl = $appConfig->getValue(self::APP_ID, "syncProviderUrl"); // experimental: sudo -u www-data php /var/www/html/occ config:app:set "multiboards" "syncProviderUrl" --value "ws://localhost:4444/"                                 
+                  
                 $policy->addAllowedConnectDomain($syncProviderUrl);                
                 $manager->addDefaultPolicy($policy);
        

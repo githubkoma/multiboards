@@ -1,14 +1,13 @@
 <?php
 //script('multiboards', 'script');
-script('multiboards', 'flow/build/static/js/main.3e8a9456');
+script('multiboards', 'flow/build/static/js/main.212ea402');
 script('multiboards', 'flow/build/static/js/787.4deb9fb9.chunk');
 style('multiboards', 'main.2688de8d');
 ?>
 
 <?php 
-// sudo -u www-data php /var/www/html/occ config:app:set "multiboards" "syncProviderUrl" --value "ws://localhost:4444/"
 $appConfig = \OC::$server->getAppConfig();
-$syncProviderUrl = $appConfig->getValue("multiboards", "syncProviderUrl");
+$syncProviderUrl = $appConfig->getValue("multiboards", "syncProviderUrl"); // experimental: sudo -u www-data php /var/www/html/occ config:app:set "multiboards" "syncProviderUrl" --value "ws://localhost:4444/"
 ?>
 
 <input type="hidden" id="syncProviderUrl" value="<?php p($syncProviderUrl) ?>" style="display: none;" />

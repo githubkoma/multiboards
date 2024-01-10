@@ -3,14 +3,23 @@
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>multiboards</id>
     <name>MultiBoards</name>
-    <summary>Digital MultiBoards</summary>
-    <description><![CDATA[MultiBoards Description]]></description>
-    <version>0.0.24</version>
+    <summary>Digital Boards</summary>
+    <description><![CDATA[Create Digital Boards with Nextcloud]]></description>
+    <version>1.0.0</version>
     <licence>agpl</licence>
-    <author mail="author@web.page" homepage="https://github.com/xyz">AuthorX</author>
+    <author mail="devweycloud@gmail.com" homepage="https://github.com/githubkoma/">Githubkoma</author>
+    <repository type="git">https://github.com/githubkoma/multiboards.git</repository>
+    <screenshot small-thumbnail="https://raw.githubusercontent.com/githubkoma/multiboards/main/img/screenshot_sm.jpg">https://raw.githubusercontent.com/githubkoma/multiboards/main/img/screenshot.jpg</screenshot>
     <namespace>MultiBoards</namespace>
-    <category>office</category>
-    <bugs>https://github.com/xyz</bugs>
+    <category>files</category>
+    <category>integration</category>
+    <category>tools</category>
+    <bugs>https://github.com/githubkoma/multiboards/issues</bugs>
+	<documentation>
+		<user>https://github.com/githubkoma/multiboards/blob/main/README.md#use-the-app</user>
+		<admin>https://github.com/githubkoma/multiboards/blob/main/README.md#install-the-app</admin>
+		<developer>https://github.com/githubkoma/multiboards/blob/main/README.md#building-the-app</developer>
+	</documentation>
     <dependencies>
         <nextcloud min-version="27" max-version="28"/>
     </dependencies>

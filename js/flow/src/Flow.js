@@ -22,11 +22,12 @@ export default class Flow extends Component {
     // REACTIVE PROPERTIES
     // ---
     this.state = { // change via setState({key: value}) !
-      nodes: [], 
-      edges: [],
+      nodes: [], // ReactFlow Nodes live here
+      edges: [], // ReactFlow Edges live here
       syncStore: store, // only this can be changed directly, without setState()
       numSyncUsers: 0,
-      editPermission: false,
+      editPermission: false,            
+      gotFileInitially: false, // We want to react/watch here (on componentDidUpdate()):
     };
 
   }
@@ -44,6 +45,9 @@ export default class Flow extends Component {
   fileUrl = { download: "", upload: ""}  
   fileContent = null;
   reactFlowInstance = null;
+  syncProviderUrl = "";
+  filledStoreInitially = false;
+  gotYjsDoc = false; // YJsDoc exists even if we didnt connect to a syncRoom, but doc still takes a bit to initialize
   
   // LIFECYCLE METHODS
   // ---
@@ -54,15 +58,33 @@ export default class Flow extends Component {
     this.fileId = this.urlParams.get('fileId');
     this.shareToken = this.urlParams.get('shareToken');     
 
-    this.getFileInitially(this.fileId, this.shareToken);
+    var $that = this;
+    this.getFileInitially(this.fileId, this.shareToken).then(function (fileInfo) {
+      $that.fileInfo = fileInfo;
+      $that.syncProviderUrl = document.getElementById("syncProviderUrl").value;
+      if ($that.syncProviderUrl !== "") {        
+        setSyncProviderRoom(fileInfo.roomId);
+        syncProvider.connect();
+      }
+    });    
 
-    // Fill Nodes on detected Changes in Store
+    // Fill ReactFlow on detected Changes in Store
     // https://syncedstore.org/docs/basics/example  
     observeDeep(store, () => {      
-      console.log("observeDeep", "now fillNodesAndEdgesFromStore");
-      this.setState({numSyncUsers: syncProvider.awareness.states.size}); // lags behind: syncProvider.awareness.states.size
+      console.log("observeDeep");
+      if (this.syncProviderUrl !== "") {
+        this.setState({numSyncUsers: syncProvider.awareness.states.size}); // lags behind: syncProvider.awareness.states.size
+      }
 
-      this.fillNodesAndEdgesFromStore(); 
+      // when initial file load takes very long, store could already have content (otherwise observeDeep() wouldnt have triggered)
+      // so we have to prevent store getting overwritten by the initial file load (see componentDidUpdate() initial stuff)
+      if (!this.filledStoreInitially) {
+        this.filledStoreInitially = true;
+        this.gotYjsDoc = true;        
+        console.log("We have a doc!", "filledStoreInitially in observeDeep()");
+      }
+
+      this.fillNodesAndEdgesFromStore();
 
       // Mark that we have unsaved Changes
       $("#btnSave").css("background-color", "#eab676");
@@ -75,13 +97,59 @@ export default class Flow extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     //console.log(prevProps, prevState);
-    //$(".react-flow__node").css("color", "white");
+    console.log("componentDidUpdate:", "Flow.js");
+
+    // HANDLE SOME INITIAL COMPONENT STEPS:
+    // AFTERWARDS THIS GETS IRRELEVANT 
+    // AND DOWN THE LINE ONLY THE ReactFlow-INSTANCE AND "observeDeep()" UPDATE STUFF !
+    //
+    // Check on componentDidUpdate() if YJsDoc got initialized
+    // Note: YJsDoc exists even if we dont connect to a syncRoom, but doc still takes a bit to initialize    
+    if (!this.gotYjsDoc) {
+      if (this.state.syncStore.nodes) {
+        this.gotYjsDoc = true;
+        console.log("We have a doc!");
+      }
+    }
+
+    // To think about: When syncProviderUrl is set, just dont load the file into ReactFlow?!
+    // Perhaps show a loading spinner, or switch to "singleplayer mode" after a while?!
+
+    //console.log(this.gotYjsDoc, Object.keys(this.state.syncStore.nodes).length,this.filledStoreInitially, this.state.gotFileInitially);
+    //console.log(syncProvider.synced, syncProvider.wsconnected, syncProvider.awareness.states.size);
+
+    // After the YJsDoc appears, the store gets synced and if no one else already
+    // added/changed something in the synced Doc, we fill it with the Nodes and Edges from File
+    if (this.gotYjsDoc && (Object.keys(this.state.syncStore.nodes).length == 0) // on empty store or 0 nodes
+        && !this.filledStoreInitially && this.state.gotFileInitially) {      
+      // Nothing yet in store? Import from file
+      // BUT: When "observeDeep" triggers, it will overwrite Nodes+Edges almost immediately,
+      //      like when syncStore comes online just a few moments later!!
+      console.log("setting nodes+edges from file");
+      let arrNodes = [];    
+      let arrEdges = [];  
+      [arrNodes, arrEdges] = FlowHelper.mapFileSyntaxToFlowSyntax(JSON.parse(this.fileContent));              
+      //this.setState({nodes: arrNodes});
+      //this.setState({edges: arrEdges});
+
+      console.log("filledStoreInitially 2");
+      this.filledStoreInitially = true;
+      arrNodes.forEach(element => {      
+        this.state.syncStore.nodes[element.id] = JSON.stringify(element);
+      });
+      arrEdges.forEach(element => {            
+        this.state.syncStore.edges[element.id] = JSON.stringify(element);
+      });
+            
+    }    
   }  
 
   componentWillUnmount() {   
-    // Disconnect from SyncedStore Provider
-    console.log("disconnecting syncProvider");
-    syncProvider.disconnect(); 
+    if (this.syncProviderUrl !== "") {
+      // Disconnect from SyncedStore Provider
+      console.log("disconnecting syncProvider");
+      syncProvider.disconnect(); 
+    }
   }
 
   // CLASS METHODS
@@ -109,32 +177,29 @@ export default class Flow extends Component {
   }
 
  async getFileInitially(id, shareToken) {
-    this.fileInfo = await FlowHelper.getFileInfo(id, shareToken);
+    var $that = this;
+    var fileInfo = await FlowHelper.getFileInfo(id, shareToken);    
     if (shareToken) {
       this.fileUrl.download = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/s/" + shareToken + "/download";
       this.fileUrl.upload = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/save?fileId=" + id + "&shareToken=" + shareToken;
 
     } else {
-      let webDavFilePath = this.fileInfo.filePath.replace(/\/files\//, '/'); // before: "/admin/files/1 b/peter.mboard" after: "/admin/1 b/peter.mboard"    
+      let webDavFilePath = fileInfo.filePath.replace(/\/files\//, '/'); // before: "/admin/files/1 b/peter.mboard" after: "/admin/1 b/peter.mboard"    
       this.fileUrl.download = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/remote.php/dav/files" + webDavFilePath;
       this.fileUrl.upload = this.fileUrl.download;
     }   
 
-    if ( (this.fileInfo.permissions > 1 && this.fileInfo.permissions < 16) ||  
-         (this.fileInfo.permissions > 17) ) 
+    if ( (fileInfo.permissions > 1 && fileInfo.permissions < 16) ||  
+         (fileInfo.permissions > 17) ) 
      {
       this.state.editPermission = true;
       document.getElementById("userBoardEditPermission").value = true;
-    }   
-    this.connectToSyncRoom(this.fileInfo.roomId);
-    await this.getFile(this.fileInfo);
-    return;
-  }
-
-  async connectToSyncRoom(roomId) {
-    setSyncProviderRoom(roomId);
-    syncProvider.connect();
-    return "connecting..";
+    }       
+    this.getFile(fileInfo).then(function() {
+      $that.setState({gotFileInitially: true});
+      console.log("got file initially");            
+    });
+    return fileInfo;
   }
 
   async getFile(fileInfo) {
@@ -145,25 +210,7 @@ export default class Flow extends Component {
         headers: {"requesttoken": window.oc_requesttoken}, 
         success: function (data) {
             console.log("successful", data);     
-
             $that.fileContent = data;
-                
-            console.log("fill store from ajax");
-            //console.log(syncProvider.wsconnected, syncProvider.awareness.states.size);
-
-            //console.log(Object.keys($that.state.syncStore.nodes).length);
-
-            // Nothing yet in store? Import from file
-            // BUT BEWARE: When "observeDeep" triggers, it will overwrite stete.nodes almost immediately!
-            if (Object.keys($that.state.syncStore.nodes).length == 0) {
-              let arrNodes = [];    
-              let arrEdges = [];  
-              [arrNodes, arrEdges] = FlowHelper.mapFileSyntaxToFlowSyntax(JSON.parse(data));              
-              $that.setState({nodes: arrNodes});
-              $that.setState({edges: arrEdges});
-              console.log("now setting nodes after load");
-            }                        
-   
         },
     })
     return result;
