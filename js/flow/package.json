@@ -1,6 +1,6 @@
 {
   "name": "flow",
-  "version": "0.0.24",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@syncedstore/core": "^0.6.0",

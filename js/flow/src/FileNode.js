@@ -335,16 +335,16 @@ class FileNode extends Component {
         <NodeToolbar isVisible={this.props.selected} position={"top"}>
           <table>
             <tr>
-              { this.state.editPermission && window.OC.currentUser
+              { false && this.state.editPermission && window.OC.currentUser
                 && <button id="btnTest" onClick={event => this.onClick(event)}>i</button>
-              }
-              { this.state.fileInfo && this.state.fileInfo.mimeType.includes("text/markdown")
-                && this.state.editPermission
-                && <button id="btnChooseSubpathMode" onClick={event => this.onClick(event)}>🔖</button>
               }
               { this.props.selected
                 && <button id="btnZoomToNode" onClick={event => this.onClick(event)}>🔎</button>
               }
+              { this.state.fileInfo && this.state.fileInfo.mimeType.includes("text/markdown")
+                && this.state.editPermission
+                && <button id="btnChooseSubpathMode" onClick={event => this.onClick(event)}>🔖</button>
+              }              
               { (window.OC.currentUser || this.props.data.ncShareToken)
                 && <button id="btnOpenDoc" onClick={event => this.onClick(event)}>📝</button>
               }

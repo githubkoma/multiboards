@@ -10,7 +10,7 @@
 - or Place this app in **nextcloud/apps/**
 
 ## Use the app
-- Create new MultiBoard within the Files Overview
+- Create new MultiBoard from the Files Overview
 - Write, Edit and Connect on Board: Text Nodes, `.md` Documents, Images, PDFs
 - Share Boards to the Public (only for single `.mboard` File, not a Shared Folder)
 

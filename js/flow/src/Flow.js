@@ -27,7 +27,7 @@ export default class Flow extends Component {
       syncStore: store, // only this can be changed directly, without setState()
       numSyncUsers: 0,
       editPermission: false,            
-      gotFileInitially: false, // We want to react/watch here (on componentDidUpdate()):
+      gotFileInitially: false, // We want to react/watch here, to trigger componentDidUpdate()
     };
 
   }
@@ -76,12 +76,14 @@ export default class Flow extends Component {
         this.setState({numSyncUsers: syncProvider.awareness.states.size}); // lags behind: syncProvider.awareness.states.size
       }
 
-      // when initial file load takes very long, store could already have content (otherwise observeDeep() wouldnt have triggered)
+      // 1) when initial file load takes very long, store could already have content (otherwise observeDeep() wouldnt have triggered)
       // so we have to prevent store getting overwritten by the initial file load (see componentDidUpdate() initial stuff)
+      // 2) observeDeep only triggers when store was changed, in Contrast to componentDidUpdate(), 
+      // where also like "this.state.gotFileInitially"-Change triggers the Component State 
       if (!this.filledStoreInitially) {
         this.filledStoreInitially = true;
-        this.gotYjsDoc = true;        
-        console.log("We have a doc!", "filledStoreInitially in observeDeep()");
+        this.gotYjsDoc = true;           
+        console.log("observeDeep", "We have a doc!", "filledStoreInitially");
       }
 
       this.fillNodesAndEdgesFromStore();
@@ -108,12 +110,13 @@ export default class Flow extends Component {
     if (!this.gotYjsDoc) {
       if (this.state.syncStore.nodes) {
         this.gotYjsDoc = true;
-        console.log("We have a doc!");
+        console.log("componentDidUpdate", "We have a doc!");
       }
     }
 
     // To think about: When syncProviderUrl is set, just dont load the file into ReactFlow?!
     // Perhaps show a loading spinner, or switch to "singleplayer mode" after a while?!
+    // Or perhaps treat it differently, YJsDoc but no providerUrl vs. YJsDoc WITH providerUrl
 
     //console.log(this.gotYjsDoc, Object.keys(this.state.syncStore.nodes).length,this.filledStoreInitially, this.state.gotFileInitially);
     //console.log(syncProvider.synced, syncProvider.wsconnected, syncProvider.awareness.states.size);
@@ -122,18 +125,16 @@ export default class Flow extends Component {
     // added/changed something in the synced Doc, we fill it with the Nodes and Edges from File
     if (this.gotYjsDoc && (Object.keys(this.state.syncStore.nodes).length == 0) // on empty store or 0 nodes
         && !this.filledStoreInitially && this.state.gotFileInitially) {      
-      // Nothing yet in store? Import from file
+      // Nothing in store YET?! -> Import from file
       // BUT: When "observeDeep" triggers, it will overwrite Nodes+Edges almost immediately,
       //      like when syncStore comes online just a few moments later!!
       console.log("setting nodes+edges from file");
       let arrNodes = [];    
       let arrEdges = [];  
       [arrNodes, arrEdges] = FlowHelper.mapFileSyntaxToFlowSyntax(JSON.parse(this.fileContent));              
-      //this.setState({nodes: arrNodes});
-      //this.setState({edges: arrEdges});
 
-      console.log("filledStoreInitially 2");
-      this.filledStoreInitially = true;
+      console.log("componentDidUpdate", "filledStoreInitially");
+      this.filledStoreInitially = true; // set this before the store changes, otherwise they would trigger "observeDeeps filledStoreInitially"
       arrNodes.forEach(element => {      
         this.state.syncStore.nodes[element.id] = JSON.stringify(element);
       });

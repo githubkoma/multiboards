@@ -1,6 +1,6 @@
 <?php
 //script('multiboards', 'script');
-script('multiboards', 'flow/build/static/js/main.212ea402');
+script('multiboards', 'flow/build/static/js/main.78ac821b');
 script('multiboards', 'flow/build/static/js/787.4deb9fb9.chunk');
 style('multiboards', 'main.2688de8d');
 ?>

@@ -9,7 +9,7 @@
     <licence>agpl</licence>
     <author mail="devweycloud@gmail.com" homepage="https://github.com/githubkoma/">Githubkoma</author>
     <repository type="git">https://github.com/githubkoma/multiboards.git</repository>
-    <screenshot small-thumbnail="https://raw.githubusercontent.com/githubkoma/multiboards/main/img/screenshot_sm.jpg">https://raw.githubusercontent.com/githubkoma/multiboards/main/img/screenshot.jpg</screenshot>
+    <screenshot>https://raw.githubusercontent.com/githubkoma/multiboards/main/img/screenshot.jpg</screenshot>
     <namespace>MultiBoards</namespace>
     <category>files</category>
     <category>integration</category>
