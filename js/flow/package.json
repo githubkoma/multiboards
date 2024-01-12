@@ -1,6 +1,6 @@
 {
   "name": "flow",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "@syncedstore/core": "^0.6.0",
@@ -17,6 +17,7 @@
     "react-modal": "^3.16.1",
     "react-scripts": "5.0.1",
     "reactflow": "^11.10.1",
+    "rehype-external-links": "^3.0.0",
     "remark-gfm": "^4.0.0",
     "web-vitals": "^2.1.4",
     "y-protocols": "^1.0.6",

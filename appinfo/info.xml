@@ -3,9 +3,13 @@
       xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
     <id>multiboards</id>
     <name>MultiBoards</name>
-    <summary>Digital Boards</summary>
-    <description><![CDATA[Create Digital Boards with Nextcloud]]></description>
-    <version>1.0.0</version>
+    <summary>Create versatile Digital Boards</summary>
+    <description><![CDATA[
+    - Create Digital Boards from your content in Nextcloud
+    - Use it for Mindmaps, Visualizations, Knowledge Management, ...
+    - Based on [Reactflow](https://reactflow.dev/)    
+    ]]></description>
+    <version>1.0.1</version>
     <licence>agpl</licence>
     <author mail="devweycloud@gmail.com" homepage="https://github.com/githubkoma/">Githubkoma</author>
     <repository type="git">https://github.com/githubkoma/multiboards.git</repository>

@@ -88,15 +88,25 @@ h6 {
     margin-top: 0px !important;
 }
 
+.react-flow__node-toolbar textarea,
+.react-flow__edgelabel-renderer input {
+    color: white !important;
+}
 
-.markDownComponent a:link {
+.markDownComponent a {
     color: blue !important;
     text-decoration: underline !important;
     cursor: pointer !important;
     font-size: 1em !important;    
     font-weight: normal !important;   
 }
-.markDownComponent a:link:before {
+.markDownComponent a:link {
+    color: blue !important;
+}
+.markDownComponent a:visited {
+    color: lightgray !important; 
+}
+.markDownComponent a:before {
     content: '🔗';
 }
 

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import { Handle, Position, NodeResizeControl, NodeToolbar } from 'reactflow';
 import Markdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import remarkGfm from 'remark-gfm' // Github flavored Markdown
+import rehypeExternalLinks from 'rehype-external-links' // as this didnt work: https://github.com/remarkjs/react-markdown/pull/761#issuecomment-1691801892
 
 class MarkDownComponent extends Component {
   constructor(props) {
@@ -42,7 +42,7 @@ class MarkDownComponent extends Component {
     return (      
       <>      
         <div class="markDownComponent">
-          <Markdown remarkPlugins={[remarkGfm]} className="nowheel" 
+          <Markdown className="nowheel" remarkPlugins={[remarkGfm]} rehypePlugins={[[rehypeExternalLinks, { target: '_blank' }]]}
             components={{img(props){const {node, ...rest} = props; return <img style={{width: '100%'}} {...rest} /> }}} // https://github.com/remarkjs/react-markdown#appendix-b-components
           >{this.props.md}</Markdown>                                        
         </div>

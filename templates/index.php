@@ -1,8 +1,8 @@
 <?php
 //script('multiboards', 'script');
-script('multiboards', 'flow/build/static/js/main.78ac821b');
+script('multiboards', 'flow/build/static/js/main.66faef52');
 script('multiboards', 'flow/build/static/js/787.4deb9fb9.chunk');
-style('multiboards', 'main.2688de8d');
+style('multiboards', 'main.09f38393');
 ?>
 
 <?php 

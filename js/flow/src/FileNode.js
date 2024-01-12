@@ -145,13 +145,13 @@ class FileNode extends Component {
       //var re = new RegExp(headingString+'\n(.*?)#','su'); u=ungreedy
       // see https://regex101.com/; e.g. u=ungreedy, \n#[^#] = until next # (Heading), but not followed by second #
       // doesnt work when ## Heading follows another ##: var re = new RegExp('('+headingString+'.*?)\n#[^#]','su'); // look between Headings 
-      var re = new RegExp('('+headingString+'.*?)\n#','su'); // look between Headings 
+      var re = new RegExp(headingString+'(.*?)\n#','su'); // look between Headings 
       var match = re.exec(this.fileContent);              
       var contentBetweenHeadings = "";
       if (match) {
         contentBetweenHeadings = match[1]; // get first Capture Group
       } else { // Perhaps end of file: try again without ending hash
-        var re = new RegExp('('+headingString+'.*?$)','su'); 
+        var re = new RegExp(headingString+'(.*?$)','su'); 
         var match = re.exec(this.fileContent);
         contentBetweenHeadings = (match ? match[1] : "")  
       }           
@@ -216,7 +216,7 @@ class FileNode extends Component {
       case "btnCloseDoc":
         if (this.state.fileInfo && this.state.fileInfo.mimeType.includes("text/markdown")) {          
           this.getFileContent(this.state.fileInfo).then(function(result) {                         
-            this.setState({fileContentToShow: this.extractFileContentToShow($that.props.data.subpath)});
+            $that.setState({fileContentToShow: $that.extractFileContentToShow($that.props.data.subpath)});
           });
         }
         this.setState({modalIsOpen: false});
@@ -395,7 +395,7 @@ class FileNode extends Component {
 
         { 
           !this.state.modalIsOpen && this.state.fileInfo 
-          && <p><code><i>{FlowHelper.dotdotAfterN(this.state.fileInfo.fileName, 32)} {FlowHelper.dotdotAfterN(this.props.data.subpath, 16)}</i></code></p>
+          && <p><code><i>{FlowHelper.dotdotAfterN(this.state.fileInfo.fileName, 32)} {FlowHelper.dotdotAfterN(this.props.data.subpath, 42)}</i></code></p>
         } 
 
         { this.state.fileInfo && (this.state.fileInfo.mimeType.includes("image/")) &&           
@@ -429,10 +429,6 @@ class FileNode extends Component {
           { (this.state.fileInfo)            
             && <iframe id={"fileNodeContent-"+this.props.data.fileId} src={this.buildIFrameUrl(this.state.fileInfo)} title="" style={{position: "relative", height: "100%", width: "100%", }}></iframe> 
           }      
-
-          { (this.props.data.ncShareToken && !window.OC.currentUser)
-            && <iframe id={"fileNodeContent-"+this.props.data.fileId} src={this.buildIFrameUrl({})} title="" style={{position: "relative", height: "100%", width: "100%", }}></iframe>
-          }
 
         </Modal>
 

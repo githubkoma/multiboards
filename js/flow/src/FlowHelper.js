@@ -117,6 +117,7 @@ class FlowHelper {
 
   static async getFileInfo(id, shareToken) {
     let url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/info?fileId=" + id + "&shareToken=" + shareToken;
+    url = encodeURI(url);
     var fileInfo = await $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken}, success: function(data) {return data} }); 
     //console.log(fileInfo);
     return fileInfo;
@@ -124,6 +125,7 @@ class FlowHelper {
 
   static async getFileInfoByPath(filePath) {
     let url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/info?filePath=" + filePath + "&fileId=null&shareToken=null";
+    url = encodeURI(url);
     var fileInfo = await $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken}, success: function(data) {return data} });     
     //console.log(fileInfo);
     return fileInfo;

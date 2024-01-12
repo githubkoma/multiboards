@@ -209,8 +209,7 @@ export default class Flow extends Component {
         url: $that.fileUrl.download, 
         method: 'GET', 
         headers: {"requesttoken": window.oc_requesttoken}, 
-        success: function (data) {
-            console.log("successful", data);     
+        success: function (data) {            
             $that.fileContent = data;
         },
     })
