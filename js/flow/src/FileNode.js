@@ -40,14 +40,16 @@ class FileNode extends Component {
   };
   fileContent = null;
   NodeSubpaths = [];
+  urlParams = "";
 
   // LIFECYCLE METHODS
   // ---
   componentWillMount() {    
     //console.log(this);
-    var $that = this;    
-    var neededShareToken = (window.OC.currentUser) ? null : this.props.data.ncShareToken;
-    FlowHelper.getFileInfo(this.props.data.fileId, neededShareToken).then(function(result) {      
+    this.urlParams = new URLSearchParams(window.location.search);    
+    var $that = this;        
+    var neededShareToken = (this.urlParams.get('shareToken')) ? this.props.data.ncShareToken : null;
+    FlowHelper.getFileInfo(this.props.data.fileId, neededShareToken).then(function(result) {            
       $that.setState({fileInfo: result}); 
       let fileInfo = result;
       if (fileInfo.mimeType.includes("text/markdown")) {
@@ -78,13 +80,14 @@ class FileNode extends Component {
       if (objElement.source == this.props.id || objElement.target == this.props.id) {        
         delete this.state.syncStore.edges[objElement.id];
       }
-    });    
+    });      
   }
 
   buildFileContentsUrl(fileId) {    
-    //console.log("buildFileContentsUrl");
+    //console.log("buildFileContentsUrl", this.state.fileInfo);
     let url = "";
-    if (!window.OC.currentUser && this.props.data.ncShareToken) {
+    // When "?shareToken=xyz" is in URL, only use the PublicShare Information, even if user is logged in
+    if (this.urlParams.get('shareToken') && this.props.data.ncShareToken) {
       url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/s/" + this.props.data.ncShareToken + "/download";
     } else {
       url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/load?fileId=" + fileId;
@@ -94,9 +97,10 @@ class FileNode extends Component {
   }
 
   buildIFrameUrl(fileInfo) {   
-    //console.log("buildIFrameUrl");
+    //console.log("buildIFrameUrl", this.state.fileInfo);    
     let url = "";
-    if (this.props.data.ncShareToken && !window.OC.currentUser) {
+    // When "?shareToken=xyz" is in URL, only use the PublicShare Information, even if user is logged in
+    if (this.urlParams.get('shareToken') && this.props.data.ncShareToken) {
       url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/s/" + this.props.data.ncShareToken;
     } else {
       // before: "/userX/files/folder Y/FileABC.png" after: "/folder Y/FileABC.png"
@@ -183,6 +187,48 @@ class FileNode extends Component {
     */
   }
 
+  async deleteFileShare() {
+    var $that = this;
+    var url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/ocs/v2.php/apps/files_sharing/api/v1/shares?format=json";
+    // We need to get the share's (int) id first, not only the sharetoken..
+    $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken},
+      success: function (result) {                   
+        if (result.ocs.data.length == 0) {
+          window.OC.dialogs.message("Share not removed, was it shared by someone else?", "Error");
+        } else {
+          let boardFileId = new URLSearchParams(window.location.search).get('fileId');                                    
+          result.ocs.data.forEach(share => {                    
+            if (share.label?.startsWith("mboardsPub") && share.can_delete) {
+              let arrShareLabelInfo = share.label.split('_');                        
+              if (arrShareLabelInfo[1] ==  boardFileId && arrShareLabelInfo[2] == $that.state.fileInfo.fileId) {
+                console.log("delete this share", arrShareLabelInfo);
+
+                var url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/ocs/v2.php/apps/files_sharing/api/v1/shares/" + share.id;
+                $.ajax({ url: url, method: 'DELETE', headers: {"requesttoken": window.oc_requesttoken},
+                  error: function(e) {
+                    window.OC.dialogs.message("Error", "Share not removed");
+                  },
+                  success: function(result) {
+                    console.log("share deleted");  
+                    // Delete all occurrences of this shareToken
+                    Object.values($that.state.syncStore.nodes).forEach(element => {
+                      var node = JSON.parse(element);
+                      if (node.type == "file" && (node.data.fileId == $that.state.fileInfo.fileId)) {                              
+                        delete node.data.ncShareToken;
+                        $that.state.syncStore.nodes[node.id] = JSON.stringify(node);
+                      }
+                    });   
+                    $("#btnSaveMboard").click();                           
+                  }                        
+                });
+              }
+            }                      
+          });                  
+        }
+      }
+    });   
+  }
+
   onClick(event) {
     console.log("onClick", event);
     let $that = this;
@@ -203,6 +249,7 @@ class FileNode extends Component {
         window.OC.dialogs.confirm("REMOVE Node?", "Confirm", 
           function(choice) {          
           if (choice == true) {
+            $that.deleteFileShare();
             $that.deleteNode();
           }
           }, false)
@@ -235,15 +282,22 @@ class FileNode extends Component {
               $.ajax({ url: url, method: 'POST', 
                 headers: {"requesttoken": window.oc_requesttoken}, contentType: "application/json",
                 // https://docs.nextcloud.com/server/latest/developer_manual/client_apis/OCS/ocs-share-api.html            
-                data: JSON.stringify({"shareType": 3, "path": path, "label": "mboards_pub_" + new URLSearchParams(window.location.search).get('fileId'), "expireDate": expireDate, "attributes": '[{"scope":"permissions","key":"download","enabled":false}]'}),
+                data: JSON.stringify({"shareType": 3, "path": path, "label": "mboardsPub_" + new URLSearchParams(window.location.search).get('fileId') + "_" + $that.state.fileInfo.fileId, "expireDate": expireDate}), //, "attributes": '[{"scope":"permissions","key":"download","enabled":false}]'}),
                 error: function (e) {
                   window.OC.dialogs.message("Error", "Not Shared") 
                 }
               }).then(function (result) {
                 console.log("share success", result);
-                var objStoreNode = JSON.parse($that.state.syncStore.nodes[$that.props.id]);
-                objStoreNode.data.ncShareToken = result.ocs.data.token;
-                $that.state.syncStore.nodes[$that.props.id] = JSON.stringify(objStoreNode);          
+                // also use this shareToken for multiple occurences of this exact fileId
+                Object.values($that.state.syncStore.nodes).forEach(element => {
+                  var node = JSON.parse(element);
+                  if (node.type == "file" && (node.data.fileId == $that.state.fileInfo.fileId)) {
+                    node.data.ncShareToken = result.ocs.data.token;
+                    $that.state.syncStore.nodes[node.id] = JSON.stringify(node);
+                  }
+                });
+                $("#btnSaveMboard").click();
+
               });
 
           }}, false);
@@ -252,28 +306,7 @@ class FileNode extends Component {
           window.OC.dialogs.confirm("Remove Share?", "Already Shared", 
           function(choice) {          
             if (choice == true) {
-              var url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/ocs/v2.php/apps/files_sharing/api/v1/shares?format=json";
-              // We need to get the share's (int) id first, not only the sharetoken..
-              $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken},
-                success: function (result) {                                    
-                  result.ocs.data.forEach(share => {
-                    if (share.token == JSON.parse($that.state.syncStore.nodes[$that.props.id]).data.ncShareToken) {
-                      var url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/ocs/v2.php/apps/files_sharing/api/v1/shares/" + share.id;
-                      $.ajax({ url: url, method: 'DELETE', headers: {"requesttoken": window.oc_requesttoken},
-                        error: function(e) {
-                          window.OC.dialogs.message("Error", "Share not removed, did someone else share it?");
-                        },
-                        success: function(result) {
-                          // Delete from nodes in any case, because perhaps the share was already deleted online
-                          var objStoreNode = JSON.parse($that.state.syncStore.nodes[$that.props.id]);
-                          delete objStoreNode.data.ncShareToken;
-                          $that.state.syncStore.nodes[$that.props.id] = JSON.stringify(objStoreNode);                                    
-                        }
-                      });
-                    }
-                  });
-                }
-              });                           
+              $that.deleteFileShare();                        
           }}, false);
         }
         break;
@@ -345,7 +378,8 @@ class FileNode extends Component {
                 && this.state.editPermission
                 && <button id="btnChooseSubpathMode" onClick={event => this.onClick(event)}>🔖</button>
               }              
-              { (window.OC.currentUser || this.props.data.ncShareToken)
+              { ((window.OC.currentUser && this.state.fileInfo)
+                || this.urlParams.get('shareToken') && this.props.data.ncShareToken) 
                 && <button id="btnOpenDoc" onClick={event => this.onClick(event)}>📝</button>
               }
               { this.state.editPermission && window.OC.currentUser 

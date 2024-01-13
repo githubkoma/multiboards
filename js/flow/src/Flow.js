@@ -89,7 +89,7 @@ export default class Flow extends Component {
       this.fillNodesAndEdgesFromStore();
 
       // Mark that we have unsaved Changes
-      $("#btnSave").css("background-color", "#eab676");
+      $("#btnSaveMboard").css("background-color", "#eab676");
 
     });
 
@@ -236,18 +236,28 @@ export default class Flow extends Component {
           async function(filePath) {
             console.log("File picked: ", filePath);            
             var fileInfo = await FlowHelper.getFileInfoByPath(filePath);
-      
+
             var newFileNode = { id: $that.uuidv4(), data: { fileId: fileInfo.fileId, ncShareToken: "" }, position: { x: 0, y: 0 }, type: "file", style: $that.customNodeStyle };            
             newFileNode.style.width = 300;
             newFileNode.style.height = 180;
-            $that.state.syncStore.nodes[newFileNode.id] = JSON.stringify(newFileNode);                                             
-            $that.setState({nodes: $that.state.nodes.concat(newFileNode)})
+
+            // did this file already have a ncShareToken? Carry it over
+            Object.values($that.state.syncStore.nodes).every(element => {
+              var node = JSON.parse(element);
+              if (node.type == "file" && (node.data.fileId == fileInfo.fileId)) {                              
+                newFileNode.data.ncShareToken = node.data.ncShareToken;                
+                return false; // breaks out of the every-loop
+              }
+              return true; // continues the every-loop
+            });
             
+            $that.state.syncStore.nodes[newFileNode.id] = JSON.stringify(newFileNode);                                             
+            $that.setState({nodes: $that.state.nodes.concat(newFileNode)})           
           }, false, ["application/pdf", "image/*", "text/markdown"], true ); // "image/*" "application/pdf"
 
         break;
 
-      case "btnSave":
+      case "btnSaveMboard":
         var fileContent = FlowHelper.mapFlowSyntaxToFileSyntax(this.state.syncStore.nodes, this.state.syncStore.edges);
 
         var $that = this;
@@ -260,7 +270,7 @@ export default class Flow extends Component {
           success: function () {          
             window.OC.dialogs.message("Save successful", "Success");
             $that.fileContent = JSON.stringify(fileContent);
-            $("#btnSave").css("background-color", "");
+            $("#btnSaveMboard").css("background-color", "");
           },
           error: function (e) {
             window.OC.dialogs.message("Error", "Not Saved") 
@@ -288,7 +298,7 @@ export default class Flow extends Component {
             arrEdges.forEach(element => {                                               
               $that.state.syncStore.edges[element.id] = JSON.stringify(element); }
             );
-            $("#btnSave").css("background-color", "");    
+            $("#btnSaveMboard").css("background-color", "");    
             
           }
         }, false)
@@ -396,7 +406,7 @@ export default class Flow extends Component {
           <Controls showInteractive={this.state.editPermission} />            
           <Panel position="top-right">
             { (this.state.editPermission)
-              && <button id="btnSave" onClick={event => this.onClick(event)}>💾</button>
+              && <button id="btnSaveMboard" onClick={event => this.onClick(event)}>💾</button>
             }
             { (this.state.editPermission)
               && <button id="btnReset" onClick={event => this.onClick(event)}>↺</button>
