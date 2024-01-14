@@ -116,18 +116,14 @@ class FlowHelper {
   }
 
   static async getFileInfo(id, shareToken) {
-    let url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/info?fileId=" + id + "&shareToken=" + shareToken;
-    url = encodeURI(url);
-    var fileInfo = await $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken}, success: function(data) {return data} }); 
-    //console.log(fileInfo);
+    let url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/info?fileId=" + id + "&shareToken=" + shareToken;    
+    var fileInfo = await $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken}, success: function(data) {return data} });     
     return fileInfo;
   }
 
-  static async getFileInfoByPath(filePath) {
-    let url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/info?filePath=" + filePath + "&fileId=null&shareToken=null";
-    url = encodeURI(url);
-    var fileInfo = await $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken}, success: function(data) {return data} });     
-    //console.log(fileInfo);
+  static async getFileInfoByPath(filePath) {    
+    let url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/info?filePath=" + encodeURIComponent(filePath) + "&fileId=null&shareToken=null";        
+    var fileInfo = await $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken}, success: function(data) {return data} });         
     return fileInfo;
   }
 

@@ -274,7 +274,7 @@ class FileNode extends Component {
         expireDate.setDate(expireDate.getDate() + 180); // limit to 180 days
         expireDate = expireDate.toISOString().substring(0,10); // -> e.g. "2024-06-31"
         if (!this.props.data.ncShareToken) {
-          window.OC.dialogs.confirm("Share to the World?", "Share Node", 
+          window.OC.dialogs.confirm("Share publically?", "Share Node", 
           function(choice) {          
             if (choice == true) {
               var url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/ocs/v2.php/apps/files_sharing/api/v1/shares?format=json";      

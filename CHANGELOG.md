@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Fixed
 
 - Use urlencode in ajax calls
-- FileNode: Modal showed iFrame twice when in Public Share
+- FileNode: Modal doesnt show iFrame twice anylonger when in Public Share
 - FileNode: Fixed the Reload of content after closing the iFrame
 
 ## 1.0.0

@@ -162,7 +162,7 @@ class FileController extends Controller {
 			throw new ForbiddenException("Forbidden", "");
 		}
 
-		return "OK";
+		return $fileInfo;
 	}
 
 	private function getFileInfoService(int $fileId, string $shareToken, $filePath) { 
