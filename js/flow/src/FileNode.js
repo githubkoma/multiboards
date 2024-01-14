@@ -4,6 +4,7 @@ import { store } from "./store.ts";
 import $ from 'jquery';
 import FlowHelper from './FlowHelper.js';
 import MarkDownComponent from './MarkDownComponent.js';
+import 'jquery.scrollto'
 
 //import ReactDOM from 'react-dom';
 import Modal from 'react-modal';
@@ -268,6 +269,16 @@ class FileNode extends Component {
         }
         this.setState({modalIsOpen: false});
         break;
+
+      case "btnScrollUp":
+        event.stopPropagation();
+        $('*[data-id="'+this.props.id+'"]').scrollTo("-=10");
+        break;
+
+      case "btnScrollDown":
+        event.stopPropagation();
+        $('*[data-id="'+this.props.id+'"]').scrollTo("+=10");
+        break;
     
       case "btnShareNode":
         var expireDate = new Date();        
@@ -403,6 +414,17 @@ class FileNode extends Component {
               }
             </tr>
           </table>          
+        </NodeToolbar>
+
+        <NodeToolbar isVisible={this.props.selected} position={"right"}>
+          <table>
+            <tr>
+              <button id="btnScrollUp" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", "margin-left": "-45px"}}>↑</button>
+            </tr>
+            <tr>
+              <button id="btnScrollDown" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", "margin-left": "-45px"}}>↓</button>
+            </tr>
+          </table>
         </NodeToolbar>
 
         <NodeToolbar isVisible={this.props.selected} position={"bottom"}>

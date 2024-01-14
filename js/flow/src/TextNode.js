@@ -4,6 +4,7 @@ import $ from 'jquery';
 import { store } from "./store.ts";
 import MarkDownComponent from './MarkDownComponent.js';
 //import { forEach } from 'core-js/core/array';
+import 'jquery.scrollto'
 
 class TextNode extends Component {
   constructor(props) {
@@ -64,6 +65,16 @@ class TextNode extends Component {
       case "btnEnterEditMode":
         this.setState({editMode: true})
         break;
+
+      case "btnScrollUp":
+        event.preventDefault();        
+        $('*[data-id="'+this.props.id+'"]').scrollTo("-=10");
+        break;
+
+      case "btnScrollDown":
+        event.preventDefault();
+        $('*[data-id="'+this.props.id+'"]').scrollTo("+=10");
+        break;
     
       default:
         break;
@@ -118,7 +129,18 @@ class TextNode extends Component {
           }
         </NodeToolbar>
 
-        <MarkDownComponent md={this.props.data.text}></MarkDownComponent>        
+        <NodeToolbar isVisible={this.props.selected} position={"right"}>
+          <table>
+            <tr>
+              <button id="btnScrollUp" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", "margin-left": "-45px"}}>↑</button>
+            </tr>
+            <tr>
+              <button id="btnScrollDown" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", "margin-left": "-45px"}}>↓</button>
+            </tr>
+          </table>
+        </NodeToolbar>
+
+        <MarkDownComponent md={this.props.data.text} onClick={event => this.onClick(event)}></MarkDownComponent>        
 
         <NodeToolbar isVisible={this.props.selected} position={"top"}>
           <table>

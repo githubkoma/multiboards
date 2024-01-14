@@ -4,9 +4,10 @@
     <id>multiboards</id>
     <name>MultiBoards</name>
     <summary>Create versatile Digital Boards</summary>
-    <description><![CDATA[
-    - Create Digital Boards from your content in Nextcloud \t
-    - Use it for Mindmaps, Visualizations, Knowledge Management, ... \t
+    <description><![CDATA[- Create Digital Boards from your content in Nextcloud
+
+    - Use it for Mindmaps, Visualizations, Knowledge Management, ...  
+    
     - Based on [Reactflow](https://reactflow.dev/)    
     ]]></description>
     <version>1.0.1</version>

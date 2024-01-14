@@ -27,6 +27,16 @@
  * Date: 2023-08-28T13:37Z
  */
 
+/*!
+ * jQuery.scrollTo
+ * Copyright (c) 2007 Ariel Flesler - aflesler ○ gmail • com | https://github.com/flesler
+ * Licensed under MIT
+ * https://github.com/flesler/jquery.scrollTo
+ * @projectDescription Lightweight, cross-browser and highly customizable animated scrolling with jQuery
+ * @author Ariel Flesler
+ * @version 2.1.3
+ */
+
 /**
  * @license React
  * react-dom.production.min.js
