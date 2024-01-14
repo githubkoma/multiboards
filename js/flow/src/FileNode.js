@@ -109,9 +109,9 @@ class FileNode extends Component {
       dir = dir.replace("/"+fileInfo.fileName, "");   
       if (dir == "") { dir = "/"; }
       if (window.OC.config.version.substring(0,2) < 28) {
-        url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/files/?dir=" + dir + "&openfile=" + fileInfo.fileId;
+        url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/files/?dir=" + encodeURIComponent(dir) + "&openfile=" + fileInfo.fileId;
       } else {
-        url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/files/files/" + fileInfo.fileId + "?dir=" + dir + "&openfile=true";
+        url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/files/files/" + fileInfo.fileId + "?dir=" + encodeURIComponent(dir) + "&openfile=true";
       }      
     }    
     return url;
