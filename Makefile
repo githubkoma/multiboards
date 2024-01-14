@@ -147,7 +147,7 @@ appstore:
 	--exclude="../$(app_name)/js/filesintegration/node_modules/*" \
 	--exclude="../$(app_name)/js/filesintegration/package.json" \
 	--exclude="../$(app_name)/js/filesintegration/package-lock.json" \
-	--exclude="../$(app_name)/js/filesintegration/webpack.config.js" \	
+	--exclude="../$(app_name)/js/filesintegration/webpack.config.js" \
 	--exclude="../$(app_name)/js/filesintegration/test*" \
 	--exclude="../$(app_name)/js/filesintegration/*.log" \
 	--exclude="../$(app_name)/.*" \
