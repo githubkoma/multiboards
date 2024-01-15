@@ -5,6 +5,7 @@ namespace OCA\MultiBoards\Controller;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\DataResponse;
 use OCP\AppFramework\Http\StreamResponse;
+use OCP\AppFramework\Http\TextPlainResponse;
 use OCP\IRequest;
 use OCP\Share\IManager;
 use OCP\ISession;
@@ -14,13 +15,15 @@ use OCP\Files\IMimeTypeDetector;
 use OCP\Share\Exceptions\ShareNotFound;
 use OCP\Files\ForbiddenException;
 use OCP\Files\NotFoundException;
+use Psr\Log\LoggerInterface;
 
 class FileController extends Controller {
 	private $userId;
     
 	private $session;
-	private $shareManager;
+	private $shareManager;	
 	private IMimeTypeDetector $mimeTypeDetector;
+	private $logger;
 
 	use Errors;
 
@@ -29,6 +32,7 @@ class FileController extends Controller {
 								ISession $session,
 								IManager $shareManager,
 								IMimeTypeDetector $mimeTypeDetector,
+								LoggerInterface $logger,
 								$UserId){
 		parent::__construct($AppName, $request);
 		$this->userId = $UserId;
@@ -36,6 +40,7 @@ class FileController extends Controller {
 		$this->request = $request;
 		$this->shareManager = $shareManager;
 		$this->mimeTypeDetector = $mimeTypeDetector;
+		$this->logger = $logger;
 	}
 
 	// OCS-OPENAPI: https://docs.nextcloud.com/server/latest/developer_manual/client_apis/OCS/ocs-openapi.html
@@ -127,6 +132,77 @@ class FileController extends Controller {
 				return new DataResponse($message, Http::STATUS_NOT_FOUND);
 			}
 
+
+		} else {
+			//throw new ForbiddenException("Forbidden", "");
+			$message = ['message' => "Error: Not Found"];
+			return new DataResponse($message, Http::STATUS_NOT_FOUND);
+		}
+			
+	}
+
+	/**
+	 * CAUTION: the @Stuff turns off security checks; see above
+	 *
+	 * @NoAdminRequired
+	 * @NoCSRFRequired
+	 * @PublicPage
+	 */	 
+    public function loadPdfPreview(int $fileId) { 
+
+		$fileInfo = $this->getFileInfoService($fileId, $shareToken = "null", $filePath = "");		
+		if ($fileInfo["nodeType"] == "dir") {		
+			//throw new NotFoundException();				
+			$message = ['message' => "Error: Not Found"];
+			return new DataResponse($message, Http::STATUS_NOT_FOUND);
+		}
+
+		/* PERMISSION_READ = 1; PERMISSION_UPDATE = 2; PERMISSION_CREATE = 4; PERMISSION_DELETE = 8; PERMISSION_SHARE = 16; PERMISSION_ALL = 31; */
+		if ( ($fileInfo["permissions"] >= Constants::PERMISSION_READ && $fileInfo["permissions"] < Constants::PERMISSION_SHARE) ||  // min READ Only (1+), below ShareType (16)
+			($fileInfo["permissions"] >= Constants::PERMISSION_SHARE+Constants::PERMISSION_READ) ) // min Sharetype + READ Only (17=16+1)
+			{	
+
+			try {
+						
+				$fileNode = \OC::$server->getRootFolder()->getById($fileId)[0]; // https://github.com/nextcloud/server/blob/master/lib/private/Files/Node/Node.php																
+				$mimeType = $this->mimeTypeDetector->getSecureMimeType($fileNode->getMimeType());				
+
+				if (str_contains($mimeType, "pdf")) {			
+
+					$this->logger->error($fileNode->getName() . " " . $mimeType);
+					
+					$fp_pdf = $fileNode->fopen('rb');
+					
+					$img = new \Imagick(); // [0] can be used to set page number
+					//$img->setResolution(100,100);
+					$img->readImageFile($fp_pdf);
+					$img->setIteratorIndex(0); // page
+					//$img = $img->flattenImages();					
+					$img->setImageFormat( "jpeg" );
+					$img->setImageCompression(\Imagick::COMPRESSION_JPEG); 
+					$img->setImageCompressionQuality(90); 					
+					$img->setImageUnits(\Imagick::RESOLUTION_PIXELSPERINCH);					
+					$img->setImageBackgroundColor('white');
+					$data = $img->getImageBlob(); 					
+
+					// https://github.com/nextcloud/notes/blob/main/lib/Controller/NotesController.php#L317				
+					$response = new TextPlainResponse($data);
+					$response->addHeader('Content-Disposition', 'attachment; filename="' . rawurldecode($fileNode->getName()) . '"');
+					$response->addHeader('Content-Type', "image/jpeg" . "; charset=utf-8");
+					$response->addHeader('Cache-Control', 'public, max-age=604800');									
+				
+				} else {
+					$message = ['message' => "Error: Not Found"];
+					return new DataResponse($message, Http::STATUS_NOT_FOUND);
+				}
+
+				return $response;
+
+			} catch (\Exception $e) {
+				//return ["Error", $e->getMessage(), $e->getTraceAsString()];
+				$message = ['message' => "Error: Not Found"];
+				return new DataResponse($message, Http::STATUS_NOT_FOUND);
+			}
 
 		} else {
 			//throw new ForbiddenException("Forbidden", "");

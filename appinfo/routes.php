@@ -13,5 +13,6 @@ return [
 	   ['name' => 'file#get_file_info', 'url' => '/file/info', 'verb' => 'GET'],
        ['name' => 'file#save_file', 'url' => '/file/save', 'verb' => 'PUT'],
        ['name' => 'file#load_media_file', 'url' => '/file/load', 'verb' => 'GET'],
+       ['name' => 'file#load_pdf_preview', 'url' => '/file/pdfPreview', 'verb' => 'GET'],
     ]
 ];

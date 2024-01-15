@@ -67,12 +67,16 @@ class TextNode extends Component {
         break;
 
       case "btnScrollUp":
-        event.preventDefault();        
+        event.stopPropagation();        
+        event.preventDefault();      
+        event.bubbles = false;  
         $('*[data-id="'+this.props.id+'"]').scrollTo("-=10");
         break;
 
       case "btnScrollDown":
-        event.preventDefault();
+        event.stopPropagation();
+        event.preventDefault();        
+        event.bubbles = false;
         $('*[data-id="'+this.props.id+'"]').scrollTo("+=10");
         break;
     
@@ -132,10 +136,10 @@ class TextNode extends Component {
         <NodeToolbar isVisible={this.props.selected} position={"right"}>
           <table>
             <tr>
-              <button id="btnScrollUp" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", "margin-left": "-45px"}}>↑</button>
+              <button id="btnScrollUp" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", color: "white", "margin-left": "-45px"}}>↑</button>
             </tr>
             <tr>
-              <button id="btnScrollDown" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", "margin-left": "-45px"}}>↓</button>
+              <button id="btnScrollDown" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", color: "white", "margin-left": "-45px"}} >↓</button>
             </tr>
           </table>
         </NodeToolbar>

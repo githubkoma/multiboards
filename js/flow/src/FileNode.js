@@ -354,6 +354,17 @@ class FileNode extends Component {
         this.setState({chooseSubpathMode: false});        
         break;
 
+      case "btnLoadPdfPreview":
+        if (!this.urlParams.get('shareToken') && !this.props.data.ncShareToken) {          
+          var url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/pdfPreview?fileId=" + this.props.data.fileId;
+          $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken}, 
+            success: function(data) { 
+              console.log(data); 
+              localStorage.setItem("imgFileNode-"+$that.props.id, data);
+          }});         
+        }        
+        break;
+
       default:
         break;
     }
@@ -419,10 +430,10 @@ class FileNode extends Component {
         <NodeToolbar isVisible={this.props.selected} position={"right"}>
           <table>
             <tr>
-              <button id="btnScrollUp" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", "margin-left": "-45px"}}>↑</button>
+              <button id="btnScrollUp" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", color: "white", "margin-left": "-45px"}}>↑</button>
             </tr>
             <tr>
-              <button id="btnScrollDown" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", "margin-left": "-45px"}}>↓</button>
+              <button id="btnScrollDown" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", color: "white", "margin-left": "-45px"}}>↓</button>
             </tr>
           </table>
         </NodeToolbar>
@@ -468,6 +479,9 @@ class FileNode extends Component {
           <span>
             <img src={window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath() + "/index.php/apps/theming/img/core/filetypes/application-pdf.svg"}></img>
             No PDF Content Preview, open the file with 📝.
+            { !this.urlParams.get('shareToken') 
+              && <button id="btnLoadPdfPreview" onClick={event => this.onClick(event)}>Load PDF Preview</button>
+            }            
           </span>
         }  
                 
