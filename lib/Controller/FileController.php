@@ -145,8 +145,8 @@ class FileController extends Controller {
 	 * CAUTION: the @Stuff turns off security checks; see above
 	 *
 	 * @NoAdminRequired
-	 * @NoCSRFRequired
-	 * @PublicPage
+	 * @ NoCSRFRequired
+	 * @ PublicPage
 	 */	 
     public function loadPdfPreview(int $fileId) { 
 
@@ -277,7 +277,7 @@ class FileController extends Controller {
 					if ($share === null || $share === false
 						|| ($share->getPassword() !== null && (!$this->session->exists("public_link_authenticated")
 						|| $this->session->get("public_link_authenticated") !== (string) $share->getId()))
-						|| ($share->getPermissions() < Constants::PERMISSION_SHARE+Constants::PERMISSION_READ)) /* PERMISSION_READ = 1; PERMISSION_UPDATE = 2; PERMISSION_CREATE = 4; PERMISSION_DELETE = 8; PERMISSION_SHARE = 16; PERMISSION_ALL = 31; */
+						|| ($share->getPermissions() < Constants::PERMISSION_READ)) /* PERMISSION_READ = 1; PERMISSION_UPDATE = 2; PERMISSION_CREATE = 4; PERMISSION_DELETE = 8; PERMISSION_SHARE = 16; PERMISSION_ALL = 31; */
 					{
 						throw new ForbiddenException();
 					}

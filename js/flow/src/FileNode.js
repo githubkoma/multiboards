@@ -42,6 +42,7 @@ class FileNode extends Component {
   fileContent = null;
   NodeSubpaths = [];
   urlParams = "";
+  cfgPdfPreview = false;
 
   // LIFECYCLE METHODS
   // ---
@@ -61,7 +62,13 @@ class FileNode extends Component {
       
     }).catch(error => console.log("ajax error", error));
 
-    this.setState({editPermission: document.getElementById("userBoardEditPermission").value});
+    this.setState({editPermission: document.getElementById("userBoardEditPermission").value});    
+
+    this.cfgPdfPreview = document.querySelector("meta[property='mboardsPdfPreview']").getAttribute("content");    
+    if (this.cfgPdfPreview == "true") {
+      this.getPdfPreviewFromLocalStorage();
+      console.log(this.getPdfPreviewFromLocalStorage());
+    }
 
     Modal.setAppElement('#app-content');
   }
@@ -170,24 +177,6 @@ class FileNode extends Component {
     return true;
   }
 
-  cleanupNcIframe() {         
-    // Clean Nextcloud Files Editor iFrame of distracting and unwanted elements
-    // doesnt work yet :(
-    /*
-    var thisFileNodeContent = $("#fileNodeContent-"+this.props.data.fileId);
-    $(thisFileNodeContent).find("#header").remove();      
-    $(thisFileNodeContent).find("footer").remove(); // mostly relevant in PublicItemResponse
-    $(thisFileNodeContent).find(".app-sidebar__close-icon").click(); 
-    $(thisFileNodeContent).find("#filestable").remove();
-    $(thisFileNodeContent).find("#rich-workspace").remove();
-    $(thisFileNodeContent).find("#app-navigation").remove();
-    $(thisFileNodeContent).find("#controls").remove();
-    $(thisFileNodeContent).find(".icons-menu").remove();
-    console.log($(thisFileNodeContent));
-    $(thisFileNodeContent).offsetWidth = 0;
-    */
-  }
-
   async deleteFileShare() {
     var $that = this;
     var url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/ocs/v2.php/apps/files_sharing/api/v1/shares?format=json";
@@ -228,6 +217,35 @@ class FileNode extends Component {
         }
       }
     });   
+  }
+
+  getPdfPreviewFromLocalStorage() {
+    var blob = localStorage.getItem("pdfPreviewFileNode-"+this.props.id);
+    let file = new File([blob], "pdfPreviewFileNode-"+this.props.id+".jpg", { type: 'image/jpeg' });
+    
+    var $that = this;
+    file.arrayBuffer().then(
+      function (result) {
+        console.log("done", result);
+        var imgElm = document.getElementById("pdfPreviewFileNode-"+$that.props.id);
+        //imgElm.src = "test";
+        console.log(imgElm);
+        //const buffer = new Buffer.from(result);
+        //const base64String = buffer.toString('base64');
+        //console.log(base64String);
+        var binary = '';
+        var bytes = new Uint8Array( result );
+        var len = bytes.byteLength;
+        for (var i = 0; i < len; i++) {
+            binary += String.fromCharCode( bytes[ i ] );
+        }
+        console.log(binary);
+        console.log(btoa(binary));
+        $("#pdfPreviewFileNode-"+$that.props.id).attr('src', "data:image/jpeg;base64," + btoa(binary));
+      } 
+    );    
+    
+    return;  
   }
 
   onClick(event) {
@@ -272,12 +290,12 @@ class FileNode extends Component {
 
       case "btnScrollUp":
         event.stopPropagation();
-        $('*[data-id="'+this.props.id+'"]').scrollTo("-=10");
+        $('*[data-id="'+this.props.id+'"]').scrollTo("-=25");
         break;
 
       case "btnScrollDown":
         event.stopPropagation();
-        $('*[data-id="'+this.props.id+'"]').scrollTo("+=10");
+        $('*[data-id="'+this.props.id+'"]').scrollTo("+=25");
         break;
     
       case "btnShareNode":
@@ -354,15 +372,14 @@ class FileNode extends Component {
         this.setState({chooseSubpathMode: false});        
         break;
 
-      case "btnLoadPdfPreview":
-        if (!this.urlParams.get('shareToken') && !this.props.data.ncShareToken) {          
+      case "btnLoadPdfPreview":       
           var url = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/index.php/apps/multiboards/file/pdfPreview?fileId=" + this.props.data.fileId;
           $.ajax({ url: url, method: 'GET', headers: {"requesttoken": window.oc_requesttoken}, 
             success: function(data) { 
               console.log(data); 
-              localStorage.setItem("imgFileNode-"+$that.props.id, data);
-          }});         
-        }        
+              localStorage.setItem("pdfPreviewFileNode-"+$that.props.id, data);
+              console.log(localStorage.getItem("pdfPreviewFileNode-"+$that.props.id));
+          }});
         break;
 
       default:
@@ -476,14 +493,17 @@ class FileNode extends Component {
         }      
 
         { !this.state.modalIsOpen && this.state.fileInfo && (this.state.fileInfo.mimeType.includes("application/pdf")) &&                     
-          <span>
-            <img src={window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath() + "/index.php/apps/theming/img/core/filetypes/application-pdf.svg"}></img>
+          <span>            
             No PDF Content Preview, open the file with 📝.
-            { !this.urlParams.get('shareToken') 
+
+            { this.cfgPdfPreview == "true" && window.OC.currentUser
               && <button id="btnLoadPdfPreview" onClick={event => this.onClick(event)}>Load PDF Preview</button>
             }            
           </span>
         }  
+        { this.cfgPdfPreview == "true" && window.OC.currentUser
+          && <img id={"pdfPreviewFileNode-"+this.props.id}></img>
+        } 
                 
         <Handle type="source" position={Position.Left} />
         

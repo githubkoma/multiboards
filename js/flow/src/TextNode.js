@@ -70,14 +70,14 @@ class TextNode extends Component {
         event.stopPropagation();        
         event.preventDefault();      
         event.bubbles = false;  
-        $('*[data-id="'+this.props.id+'"]').scrollTo("-=10");
+        $('*[data-id="'+this.props.id+'"]').scrollTo("-=25");
         break;
 
       case "btnScrollDown":
         event.stopPropagation();
         event.preventDefault();        
         event.bubbles = false;
-        $('*[data-id="'+this.props.id+'"]').scrollTo("+=10");
+        $('*[data-id="'+this.props.id+'"]').scrollTo("+=25");
         break;
     
       default:

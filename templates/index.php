@@ -1,6 +1,6 @@
 <?php
 //script('multiboards', 'script');
-script('multiboards', 'flow/build/static/js/main.5981f096');
+script('multiboards', 'flow/build/static/js/main.4d65d1d0');
 script('multiboards', 'flow/build/static/js/787.4deb9fb9.chunk');
 style('multiboards', 'main.09f38393');
 ?>
@@ -10,7 +10,6 @@ $appConfig = \OC::$server->getAppConfig();
 $syncProviderUrl = $appConfig->getValue("multiboards", "syncProviderUrl"); // experimental: sudo -u www-data php /var/www/html/occ config:app:set "multiboards" "syncProviderUrl" --value "ws://localhost:4444/"
 ?>
 
-<input type="hidden" id="syncProviderUrl" value="<?php p($syncProviderUrl) ?>" style="display: none;" />
 <input type="hidden" id="userBoardEditPermission" style="display: none;" /> <!-- Runtime filled -->
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densityDpi=device-dpi" />

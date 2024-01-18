@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## 1.0.2
+
+### Added
+
+- Added Scrollbuttons within Text- and FileNodes
+
+### Changed
+
+- More Server-Side Logging possibilities in FileController.php
+- appConfig now propagated to Frontend via Application.php
+
+### Fixed
+
+- Different Logged in User couldnt open a Board despite Read Permission
+
 ## 1.0.1
 
 ### Added

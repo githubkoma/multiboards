@@ -30,15 +30,15 @@ class Application extends App implements IBootstrap {
                 $manager = $this->getContainer()->getServer()->getContentSecurityPolicyManager();
                 $policy = new ContentSecurityPolicy();
 
-                //Util::addHeader('meta', ['property' => "Stuff", 'content' => 'ValueXYZ']);
+                // propagated appConfig to Frontend
+                $syncProviderUrl = $appConfig->getValue(self::APP_ID, "syncProviderUrl"); // Allow Connection to SyncProvider  
+                Util::addHeader('meta', ['property' => "mboardsSyncProviderUrl", 'content' => $syncProviderUrl]);  // experimental: sudo -u www-data php /var/www/html/occ config:app:set "multiboards" "syncProviderUrl" --value "ws://localhost:4444/"
+                Util::addHeader('meta', ['property' => "mboardsPdfPreview", 'content' => $appConfig->getValue(self::APP_ID, "pdfPreview")]); // PoC attempt: sudo -u www-data php /var/www/html/occ config:app:set "multiboards" "pdfPreview" --value "true"
 
                 //$policy->addAllowedStyleDomain('fonts.googleapis.com');                                              
                 //$policy->addAllowedFrameDomain('*');
                 $policy->addAllowedImageDomain('*');
                 
-                // Allow Connection to SyncProvider                 
-                $syncProviderUrl = $appConfig->getValue(self::APP_ID, "syncProviderUrl"); // experimental: sudo -u www-data php /var/www/html/occ config:app:set "multiboards" "syncProviderUrl" --value "ws://localhost:4444/"                                 
-                  
                 $policy->addAllowedConnectDomain($syncProviderUrl);                
                 $manager->addDefaultPolicy($policy);
        

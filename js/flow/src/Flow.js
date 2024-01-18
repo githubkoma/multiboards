@@ -61,7 +61,7 @@ export default class Flow extends Component {
     var $that = this;
     this.getFileInitially(this.fileId, this.shareToken).then(function (fileInfo) {
       $that.fileInfo = fileInfo;
-      $that.syncProviderUrl = document.getElementById("syncProviderUrl").value;
+      $that.syncProviderUrl = document.querySelector("meta[property='mboardsSyncProviderUrl']").getAttribute("content"); // see store.ts
       if ($that.syncProviderUrl !== "") {        
         setSyncProviderRoom(fileInfo.roomId);
         syncProvider.connect();
