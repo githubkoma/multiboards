@@ -23,7 +23,8 @@ class FileNode extends Component {
       fileInfo: null,      
       chooseSubpathMode: false,
       fileContentToShow: null,
-      modalIsOpen: false,      
+      modalIsOpen: false,  
+      nodeActionMenu: 0,    
     };
   }
 
@@ -38,7 +39,7 @@ class FileNode extends Component {
       width: "95%", height: "80%",
       background: "black",
     },
-  };
+  };  
   fileContent = null;
   NodeSubpaths = [];
   urlParams = "";
@@ -260,6 +261,14 @@ class FileNode extends Component {
         console.log(window.OC.currentUser);
         break;
 
+      case "btnNodeActionMenuSwitcher":
+        if (this.state.nodeActionMenu == 1) {
+          this.setState({nodeActionMenu: 0});
+        } else {
+          this.setState({nodeActionMenu: this.state.nodeActionMenu + 1});
+        }
+        break;
+
       case "btnZoomToNode":                           
         $("#btnFitViewport").click();
         break;
@@ -407,25 +416,31 @@ class FileNode extends Component {
         <NodeToolbar isVisible={this.props.selected} position={"top"}>
           <table>
             <tr>
-              { false && this.state.editPermission && window.OC.currentUser
-                && <button id="btnTest" onClick={event => this.onClick(event)}>i</button>
-              }
-              { this.props.selected
+              { this.state.nodeActionMenu == 0 
+                && this.props.selected
                 && <button id="btnZoomToNode" onClick={event => this.onClick(event)}>🔎</button>
-              }
-              { this.state.fileInfo && this.state.fileInfo.mimeType.includes("text/markdown")
-                && this.state.editPermission
-                && <button id="btnChooseSubpathMode" onClick={event => this.onClick(event)}>🔖</button>
               }              
-              { ((window.OC.currentUser && this.state.fileInfo)
+              { this.state.nodeActionMenu == 0 
+                && ((window.OC.currentUser && this.state.fileInfo)
                 || this.urlParams.get('shareToken') && this.props.data.ncShareToken) 
                 && <button id="btnOpenDoc" onClick={event => this.onClick(event)}>📝</button>
               }
-              { this.state.editPermission && window.OC.currentUser 
-                && <button id="btnShareNode" onClick={event => this.onClick(event)} >🌐</button>
+              { this.state.nodeActionMenu == 1
+                && this.state.fileInfo && this.state.fileInfo.mimeType.includes("text/markdown")
+                && this.state.editPermission
+                && <button id="btnChooseSubpathMode" onClick={event => this.onClick(event)}>🔖</button>
               }
-              { this.state.editPermission
+              { this.state.nodeActionMenu == 1
+                && this.state.editPermission && window.OC.currentUser 
+                && <button id="btnShareNode" onClick={event => this.onClick(event)} >🌐</button>
+              }              
+              { this.state.nodeActionMenu == 1
+                && this.state.editPermission
                 && <button id="btnDeleteNode" onClick={event => this.onClick(event)} >🗑️</button>
+              }
+              <button id="btnNodeActionMenuSwitcher" onClick={event => this.onClick(event)} >⋯</button>
+              { false && this.state.editPermission && window.OC.currentUser
+                && <button id="btnTest" onClick={event => this.onClick(event)}>i</button>
               }
             </tr>
 
@@ -435,7 +450,7 @@ class FileNode extends Component {
                   {this.NodeSubpaths.map((NodeSubpath,index) => 
                     <option key={index}>{NodeSubpath}</option> 
                   )}
-                </select>          
+                </select>     
               }
               { this.state.chooseSubpathMode 
                 && <button id="btnNodeSubpathChosen" onClick={event => this.onClick(event)} >✔️</button>
@@ -447,10 +462,10 @@ class FileNode extends Component {
         <NodeToolbar isVisible={this.props.selected} position={"right"}>
           <table>
             <tr>
-              <button id="btnScrollUp" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", color: "white", "margin-left": "-45px"}}>↑</button>
+              <button id="btnScrollUp" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", color: "white", "margin-left": "-45px", "margin-bottom": "-5px"}}>↑</button>
             </tr>
             <tr>
-              <button id="btnScrollDown" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", color: "white", "margin-left": "-45px"}}>↓</button>
+              <button id="btnScrollDown" onClick={event => this.onClick(event)} style={{background: "transparent", "border-color": "transparent", color: "white", "margin-left": "-45px", "margin-top": "-5px"}}>↓</button>
             </tr>
           </table>
         </NodeToolbar>
@@ -488,7 +503,7 @@ class FileNode extends Component {
 
         { !this.state.modalIsOpen && this.state.fileInfo && (this.state.fileInfo.mimeType.includes("text/markdown")) &&                     
           <div style={{margin: "10px"}}>  
-            <MarkDownComponent md={this.state.fileContentToShow}></MarkDownComponent>
+            <MarkDownComponent md={this.state.fileContentToShow} fileInfo={this.state.fileInfo}></MarkDownComponent>
           </div>
         }      
 

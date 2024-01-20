@@ -6,7 +6,7 @@ import rehypeExternalLinks from 'rehype-external-links' // as this didnt work: h
 class MarkDownComponent extends Component {
   constructor(props) {
     super(props); // e.g. this.props.selected
-    //console.log("props:", props);
+    console.log("props:", props);
 
     // REACTIVE PROPERTIES:
     // ---
@@ -34,16 +34,31 @@ class MarkDownComponent extends Component {
 
   // CLASS METHODS:
   // ---
+
+  buildImgUrl(src) {    
+    // try to get img-files with relative path, e.g. <img src=".attachments.1039/Screenshot%20from%202024-01-20%2010-57-33.jpg">
+    if ( this.props.fileInfo && window.OC.currentUser // only logged in user has this webdav scheme
+        && (!src.includes("http") && !src.includes("https"))) { // assume absolute path when httpS is missing
+      let webDavFilePath = this.props.fileInfo.filePath.replace(this.props.fileInfo.fileName, ''); // before: "/admin/files/1 b/peter.mboard" after: "/admin/1 b/"    
+      webDavFilePath = webDavFilePath.replace(/\/files\//, '/'); // before: "/admin/files/1 b/peter.mboard" after: "/admin/1 b/peter.mboard"    
+      webDavFilePath += src;
+      webDavFilePath = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/remote.php/dav/files" + webDavFilePath
+      return webDavFilePath;
+    } // absolute img paths stay untouched
+    return src;
+  }
+
   render() {
     //<div style={{...pStyle, color: "red"}}>    
 
+    var $that = this;  
     // MARKDOWN:
-    // https://react.dev/reference/react-dom/components/textarea    
+    // https://react.dev/reference/react-dom/components/textarea      
     return (      
       <>      
         <div class="markDownComponent">
           <Markdown className="nowheel" remarkPlugins={[remarkGfm]} rehypePlugins={[[rehypeExternalLinks, { target: '_blank' }]]}
-            components={{img(props){const {node, ...rest} = props; return <img style={{width: '100%'}} {...rest} /> }}} // https://github.com/remarkjs/react-markdown#appendix-b-components
+            components={{img(props){const {node, src, ...rest} = props; return <img style={{width: '100%'}} src={$that.buildImgUrl(src)} {...rest} /> }}} // https://github.com/remarkjs/react-markdown#appendix-b-components
           >{this.props.md}</Markdown>                                        
         </div>
       </>
