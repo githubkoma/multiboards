@@ -10,7 +10,7 @@
 
 This app is in an early stage and some designs or features are subject to change.
     ]]></description>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <licence>agpl</licence>
     <author mail="devweycloud@gmail.com" homepage="https://github.com/githubkoma/">Githubkoma</author>
     <repository type="git">https://github.com/githubkoma/multiboards.git</repository>
@@ -26,7 +26,7 @@ This app is in an early stage and some designs or features are subject to change
 		<developer>https://github.com/githubkoma/multiboards/blob/main/README.md#building-the-app</developer>
 	</documentation>
     <dependencies>
-        <nextcloud min-version="27" max-version="28"/>
+        <nextcloud min-version="27" max-version="29"/>
     </dependencies>
     <repair-steps>
         <install>
