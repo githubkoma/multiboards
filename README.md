@@ -73,5 +73,11 @@ filesintegration$ vi webpack.config.js
 - root `index.php` includes script + css references
 
 ## Publish the App
-- [Publish the App on the Appstore](https://nextcloudappstore.readthedocs.io/en/latest/developer.html#publishing-apps-on-the-app-store)
 - [App Upgrade Guide](https://docs.nextcloud.com/server/latest/developer_manual/app_publishing_maintenance/app_upgrade_guide/index.html)
+- [Publish the App on the Appstore](https://nextcloudappstore.readthedocs.io/en/latest/developer.html#publishing-apps-on-the-app-store)
+  - `apps/multiboards$ make appstore`
+  - Signature: `openssl dgst -sha512 -sign multiboards.key multiboards.tar.gz | openssl base64`
+  - Git Release Asset: Create new Release in Github Repo, upload `multiboards.tar.gz` as Asset
+  - Upload: https://apps.nextcloud.com/developer/apps/releases/new
+    - Input Signature (see above)
+    - Input Link to Git Release Asset (https://github.com/.../releases/download/.../multiboards.tar.gz)
