@@ -17,6 +17,13 @@
 ## Building the app
 
 ### Javascript
+Node/npm:
+(see https://github.com/nvm-sh/nvm)
+```
+$ curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.0/install.sh | bash
+$ nvm install 22
+```
+
 React:
 ```
 js/flow/$ npm install
@@ -24,6 +31,7 @@ js/flow/$ npm run build
 ```
 
 Filesintegration:
+(+see package.json: "build": ...)
 ```
 js/filesintegration/$ npm install
 js/filesintegration/$ npm run build
@@ -48,6 +56,8 @@ js$ cd filesintegration
 filesintegration$ npm init -y
 filesintegration$ npm install webpack webpack-cli --save-dev
 filesintegration$ npm install @nextcloud/files
+filesintegration$ npm install @nextcloud/browserslist-config
+filesintegration$ npm install path-browserify
 filesintegration$ vi package.json
 filesintegration$ vi webpack.config.js
 ```

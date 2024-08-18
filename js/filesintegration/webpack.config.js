@@ -1,13 +1,19 @@
 // First: https://webpack.js.org/guides/getting-started/
-// THANKS TO: https://github.com/jgraph/drawio-nextcloud/blob/main/webpack.config.js
-const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
+    /*
     plugins: [
         // fix "process is not defined" error:        
         new webpack.ProvidePlugin({
             process: 'process/browser.js',
         }),
-    ]
+    ],
+    */
+    resolve: {
+        fallback: {
+            process: require.resolve("process"), // https://github.com/react-dnd/react-dnd/issues/3425#issuecomment-1214554950
+            path: require.resolve("path-browserify"), // before: const path = require('path')
+        }
+    }
 }

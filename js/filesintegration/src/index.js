@@ -62,7 +62,7 @@ if (OC.config.version.substring(0,2) >= 28) {
 				if (!window.OC.getCurrentUser().uid) {
 					alert("Not yet implemented.");
 				} else {
-					var webDavUrl = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/remote.php/dav/" + file.root + file.path + "/" + "MultiBoard " + new Date(Date.now()).toUTCString().substring(5) + ".mboard";        
+					var webDavUrl = window.OC.getProtocol() + "://" + window.OC.getHost() + window.OC.getRootPath()+ "/remote.php/dav/" + file.root + file.path + "/" + "MultiBoard " + new Date(Date.now()).toUTCString().substring(5).replace(/\:/g, "-") + ".mboard";        
 					$.ajax({
 						url: webDavUrl, 
 						method: 'PUT', 

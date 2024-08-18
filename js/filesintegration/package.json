@@ -1,11 +1,11 @@
 {
   "name": "filesintegration",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",    
-    "build": "npx webpack && mv dist/main.js ../filesintegration.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx webpack && cp dist/main.js ../filesintegration.js -f"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,8 @@
     "webpack-cli": "^5.1.4"
   },
   "dependencies": {
-    "@nextcloud/files": "^3.0.0"
+    "@nextcloud/browserslist-config": "^2.2.0",
+    "@nextcloud/files": "^3.8.0",
+    "path-browserify": "^1.0.1"
   }
 }
